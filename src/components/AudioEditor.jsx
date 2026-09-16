@@ -99,6 +99,61 @@ function triggerDownload(blob, downloadName) {
   URL.revokeObjectURL(url);
 }
 
+function formatTime(seconds) {
+  if (!seconds || Number.isNaN(seconds)) {
+    return "00:00";
+  }
+
+  const minutes = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+
+  return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+}
+
+/*
+ * Builds the small floating time labels shown at the region's
+ * start and end handles, plus an updater to keep them in sync
+ * while the user drags/resizes the selection.
+ */
+function createRegionLabels() {
+  const wrapper = document.createElement("div");
+  wrapper.style.position = "absolute";
+  wrapper.style.inset = "0";
+  wrapper.style.pointerEvents = "none";
+
+  const labelStyle = {
+    position: "absolute",
+    top: "2px",
+    fontSize: "10px",
+    fontFamily: "monospace",
+    color: "#1f2a2e",
+    background: "rgba(255, 255, 255, 0.9)",
+    padding: "1px 4px",
+    borderRadius: "3px",
+    border: "1px solid rgba(31, 42, 46, 0.15)",
+    whiteSpace: "nowrap",
+  };
+
+  const startLabel = document.createElement("span");
+  Object.assign(startLabel.style, labelStyle, { left: "2px" });
+
+  const endLabel = document.createElement("span");
+  Object.assign(endLabel.style, labelStyle, {
+    right: "2px",
+    transform: "translateX(0)",
+  });
+
+  wrapper.appendChild(startLabel);
+  wrapper.appendChild(endLabel);
+
+  const update = (start, end) => {
+    startLabel.textContent = formatTime(start);
+    endLabel.textContent = formatTime(end);
+  };
+
+  return { element: wrapper, update };
+}
+
 export default function AudioEditor({ audioUrl, fileName, onCutDownload }) {
   const containerRef = useRef(null);
   const waveSurferRef = useRef(null);
@@ -191,6 +246,8 @@ export default function AudioEditor({ audioUrl, fileName, onCutDownload }) {
 
     wavesurfer.load(audioUrl);
 
+    const regionLabels = createRegionLabels();
+
     wavesurfer.on("ready", () => {
       isReady = true;
 
@@ -211,10 +268,12 @@ export default function AudioEditor({ audioUrl, fileName, onCutDownload }) {
         color: "rgba(61, 214, 160, 0.18)",
         drag: true,
         resize: true,
+        content: regionLabels.element,
       });
 
       regionRef.current = region;
 
+      regionLabels.update(start, end);
       setSelection({ start, end });
 
       if (pendingDestroy) {
@@ -223,10 +282,20 @@ export default function AudioEditor({ audioUrl, fileName, onCutDownload }) {
     });
 
     /*
+     * Live time labels on the region's start/end handles while
+     * the user is actively dragging or resizing.
+     */
+    regions.on("region-update", (region) => {
+      regionLabels.update(region.start, region.end);
+    });
+
+    /*
      * Update selected section when
      * user drags/resizes handles
      */
     regions.on("region-updated", (region) => {
+      regionLabels.update(region.start, region.end);
+
       setSelection({
         start: region.start,
         end: region.end,
@@ -286,17 +355,6 @@ export default function AudioEditor({ audioUrl, fileName, onCutDownload }) {
       regionRef.current = null;
     };
   }, [audioUrl]);
-
-  const formatTime = (seconds) => {
-    if (!seconds || Number.isNaN(seconds)) {
-      return "00:00";
-    }
-
-    const minutes = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-
-    return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-  };
 
   /*
    * Play only selected audio
