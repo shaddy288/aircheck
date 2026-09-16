@@ -9,7 +9,7 @@ const sampleData = [
     ts: "2026-08-01 00:15",
     loc: "Agartala",
     file: "agartala_0015.mp3",
-    audioUrl: "/audio/dummy_data.mp3",
+    audioUrl: "/audio/dummy_Data.mp3",
     status: "ok",
   },
   {
@@ -17,7 +17,7 @@ const sampleData = [
     ts: "2026-08-01 03:30",
     loc: "Agartala",
     file: "agartala_0330.mp3",
-    audioUrl: "/audio/dummy_data.mp3",
+    audioUrl: "/audio/dummy_Data.mp3",
     status: "processing",
   },
 ];
