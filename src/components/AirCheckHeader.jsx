@@ -1,19 +1,30 @@
+function LogoMark() {
+  return (
+    <div className="flex items-center gap-2">
+      <img src="https://www.radiocity.in/rc-new/images/RC-logonew.png" alt="AirCheck Logo" />
+
+      {/*
+        Swap this whole LogoMark function for an <img src="/logo.png" .../>
+        once you have a real logo file — everything else in the header
+        layout below stays the same.
+      */}
+      <span className="text-lg font-bold tracking-tight text-[#1f2a2e]">
+        Air<span className="text-[#237d70]">Check</span>
+      </span>
+    </div>
+  );
+}
+
 export default function AirCheckHeader({ stationCount }) {
   return (
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <h1 className="text-xl font-bold tracking-tight">
-          Air Check Data
-        </h1>
+    <div className="mb-5 grid grid-cols-1 items-center gap-3 md:grid-cols-3">
+      {/* Left: intentionally empty, balances the grid */}
+      <div className="hidden md:block" />
 
-        <p className="mt-1 text-sm text-[#6b7a80]">
-          Query recorded readings by date, time band and location
-        </p>
+      {/* Center: logo */}
+      <div className="flex justify-center">
+        <LogoMark />
       </div>
-
-      <span className="rounded-md border border-[#bfe2da] bg-[#e4f4f1] px-3 py-1 font-mono text-xs text-[#237d70]">
-        {stationCount} stations online
-      </span>
     </div>
   );
 }

@@ -101,8 +101,8 @@ export default function AirCheckPage() {
 
   return (
     <main className="min-h-screen bg-[#eef2f1] px-4 py-8 text-[#1f2a2e]">
-      <div className="mx-auto max-w-6xl">
-        <AirCheckHeader stationCount={4} />
+      <div className="mx-auto">
+        <AirCheckHeader />
 
         <AirCheckFilters
           filters={filters}
