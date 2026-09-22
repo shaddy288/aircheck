@@ -8,7 +8,12 @@ export default function ResultsTable({
   setSelected,
   onDownload,
 }) {
-  const [expandedId, setExpandedId] = useState(null);
+  // Tracks rows the user has explicitly collapsed. Anything NOT in
+  // here is open by default — including new rows that show up later
+  // (e.g. after a search), so newly loaded rows also start open.
+  const [collapsedIds, setCollapsedIds] = useState(() => new Set());
+
+  const isExpanded = (id) => !collapsedIds.has(id);
 
   const toggleRow = (id) => {
     setSelected((current) =>
@@ -19,7 +24,17 @@ export default function ResultsTable({
   };
 
   const toggleExpand = (id) => {
-    setExpandedId((current) => (current === id ? null : id));
+    setCollapsedIds((current) => {
+      const next = new Set(current);
+
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+
+      return next;
+    });
   };
 
   return (
@@ -54,7 +69,7 @@ export default function ResultsTable({
 
             <tbody>
               {rows.map((row) => {
-                const isExpanded = expandedId === row.id;
+                const expanded = isExpanded(row.id);
 
                 return (
                   <Fragment key={row.id}>
@@ -85,10 +100,10 @@ export default function ResultsTable({
                         <button
                           type="button"
                           onClick={() => toggleExpand(row.id)}
-                          aria-expanded={isExpanded}
+                          aria-expanded={expanded}
                           className="text-xs font-medium text-[#237d70] hover:underline"
                         >
-                          {isExpanded ? "Hide editor" : "Open editor"}
+                          {expanded ? "Hide editor" : "Open editor"}
                         </button>
                       </td>
 
@@ -103,7 +118,7 @@ export default function ResultsTable({
                       </td>
                     </tr>
 
-                    {isExpanded && (
+                    {expanded && (
                       <tr className="border-b border-[#eef1f0] bg-[#fafcfb]">
                         <td colSpan={6} className="px-3 py-4">
                           <AudioEditor
