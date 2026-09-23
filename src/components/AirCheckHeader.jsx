@@ -9,7 +9,7 @@ function LogoMark() {
         layout below stays the same.
       */}
       <span className="text-lg font-bold tracking-tight text-[#1f2a2e]">
-        Airs<span className="text-[#237d70]">Check</span>
+        Aisr<span className="text-[#237d70]">Check</span>
       </span>
     </div>
   );
