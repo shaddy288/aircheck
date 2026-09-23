@@ -1,35 +1,53 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AirCheckHeader from "../src/components/AirCheckHeader";
 import AirCheckFilters from "../src/components/AirCheckFilters";
 import ResultsTable from "../src/components/ResultsTable";
 
-const sampleData = [
-  {
-    id: 1,
-    ts: "2026-08-01 00:15",
-    loc: "Agartala",
-    file: "agartala_0015.mp3",
-    audioUrl: "/audio/dummy_Data.mp3",
-    status: "ok",
-  },
-  {
-    id: 2,
-    ts: "2026-08-01 03:30",
-    loc: "Agartala",
-    file: "agartala_0330.mp3",
-    audioUrl: "/audio/dummy_Data.mp3",
-    status: "processing",
-  },
-];
 
 export default function AirCheckPage() {
-  const [rows, setRows] = useState(sampleData);
+  const [rows, setRows] = useState([]);
   const [selected, setSelected] = useState([]);
+  const [locations, setLocations] = useState([]);
+
+  console.log("now i am in location", locations);
+
+  useEffect(() => {
+    const loadLocations = async () => {
+      const response = await fetch(
+        "http://localhost/aircheck/backend/getLocations.php",
+      );
+
+      if (!response.ok) {
+        throw new Error("Unable to Load Locations");
+      }
+
+      const data = await response.json();
+
+      if (!Array.isArray(data)) {
+        throw new Error(data.error || "Invalid Loactions response");
+      }
+
+      setLocations(data);
+
+      
+      if (data.length > 0) {
+        setFilters((previous) => ({
+          ...previous,
+          location: data[0],
+        }));
+      }
+    };
+
+    loadLocations().catch((error) => {
+      console.error("Location loading faild : ", error);
+    });
+
+  }, []);
 
   const [filters, setFilters] = useState({
     fromDate: "",
     toDate: "",
-    location: "Agartala",
+    location: "",
     timeStart: 0,
     timeEnd: 24,
   });
@@ -109,6 +127,7 @@ export default function AirCheckPage() {
           onChange={handleFilterChange}
           onSearch={handleSearch}
           rows={rows}
+          locations={locations}
           selected={selected}
           setSelected={setSelected}
           onBulkDownload={handleBulkDownload}

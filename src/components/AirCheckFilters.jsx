@@ -1,17 +1,13 @@
 import TimeBandSlider from "./TimeBandSlider";
 import ActionBar from "./ActionBar";
 
-const locations = [
-  "Agartala",
-  "Guwahati",
-  "Shillong",
-  "Imphal",
-];
+
 
 const inputClass =
   "w-full rounded-md border border-[#dbe3e2] bg-white px-3 py-2 text-sm outline-none transition focus:border-[#2f9e8f] focus:ring-2 focus:ring-[#2f9e8f]/20";
 
 export default function AirCheckFilters({
+  locations,
   filters,
   onChange,
   onSearch,
