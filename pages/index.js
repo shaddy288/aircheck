@@ -9,7 +9,7 @@ export default function AirCheckPage() {
   const [selected, setSelected] = useState([]);
   const [locations, setLocations] = useState([]);
 
-  console.log("now i am in location", locations);
+
 
   useEffect(() => {
     const loadLocations = async () => {
